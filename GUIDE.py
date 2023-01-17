@@ -2465,6 +2465,7 @@ elif method == 'ORCA' and methodology == str(1) or methodology == str(2) or meth
     yasara.ShowMessage("Geometry optimization is complete and results are saved in: "+ macrotarget)
 ##########fukui function calculation####
     if methodology == str(10):
+      yasara.run("Delobj all and not selected")
       atomcharge=int(reactcharge)
       reactmultiplicity=int(reactmultiplicity)
       newmultiplicity=reactmultiplicity+1
@@ -2678,7 +2679,7 @@ elif method == 'ORCA' and methodology == str(1) or methodology == str(2) or meth
       os.remove(macrotarget+'/'+'condensed_fukui.txt')
       os.remove((macrotarget)+'/'+'atomname.txt')
       yasara.ShowMessage("Fukui function calculation is complete")
-      yasara.run("saveYOB 1,"+macrotarget+"/"+"inputmolecule.yob")
+      yasara.run("saveYOB all,"+macrotarget+"/"+"inputmolecule.yob")
     else:
       yasara.ShowMessage("check your structure")
       print('check your structure') 
