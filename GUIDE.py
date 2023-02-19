@@ -545,13 +545,7 @@ if method == 'ORCA' and methodology == str(1) or methodology == str(2) or method
   temp.write((str(resultlist)).replace("'","").replace(" ", "\n").replace("[","").replace("]","").replace(",",""))
   temp.write('\n')
   temp.close()
-  ycalcline= open((pathYasara)+'/'+'ytempo.ini')
-  for line in ycalcline:
-      if "0" in line:
-         yasara.ShowMessage("GUIDE must need a specific functional and basis set information for ORCA")
-         yasara.plugin.end()
-      else:
-         print('ok')
+
 
 
 #the tempo.ini contains the input file information
