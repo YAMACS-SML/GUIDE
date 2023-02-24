@@ -4035,7 +4035,7 @@ if method == 'MOPAC' :
 
 ##homo-lumo energy gap calculation    
   if methodology == 'HOMO-LUMO':  
-    if theory == 'AM1' :
+    if theory == ' ' :
       yasara.run('QuantumMechanics AM1')
       keys="DENSITY"
       yasara.run('LogAs '+(str(macrotarget))+'/'+str(nameobj)+'_qm_log,Append=No,RunMOPACObj 1,'+str(keys))    
