@@ -51,7 +51,7 @@ if macrotarget == '':
 else:
   print('ok')
 mod=(platform.system())
-if mod== 'Linux':
+if mod== 'Linux' or mod == 'Darwin':
   mod=str(1)
   print('Linux')
 else:
