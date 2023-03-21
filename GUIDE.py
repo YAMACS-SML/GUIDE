@@ -1522,9 +1522,13 @@ if method == 'ORCA' and methodology == str(3) or methodology == str(8)  or metho
     fts = open((macrotarget)+'/'+'ts_ini.txt', "r")
     contentts= fts.readlines()
     ats = str((contentts[0]).strip('\n'))    
-    if ats == str(2):
-       yasara.ShowMessage("Geometry optimization is complete")
+    if ats == str(2) or mod==str(2):
+       yasara.ShowMessage("Geometry optimization is complete. For ONIOM TS calculation, XTB tool is required.")
+       print('XTB is currently available only for linux system..in absent of XTB, GUIDE can not perform ONIOM TS calculation.')
        yasara.plugin.end()
+    yasara.ShowMessage("Make sure XTB is installed and otool_xtb is present in Orca directory")
+    print('XTB is currently available only for linux system..in absent of XTB, GUIDE can not perform ONIOM TS calculation.')
+    yasara.run("wait continuebutton")
 
     imgalllist =\
         yasara.ShowWin("Custom","No of points",400,250,
