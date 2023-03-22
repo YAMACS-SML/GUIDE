@@ -3854,7 +3854,7 @@ elif method == 'ORCA' and methodology == str(1) or methodology == str(2) or meth
     solvent= str((content[1]).strip('\n'))
     print(content)
     print(solvent)
-    if solvent == "None":
+    if solvent == "None(gas)":
       solvent= ' '
     else:
       solvent = 'CPCM('+str(solvent)+')'
