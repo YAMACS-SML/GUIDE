@@ -3824,33 +3824,36 @@ elif method == 'ORCA' and methodology == str(1) or methodology == str(2) or meth
         shutil.copy(src, dst)        
     else:
        print("###")
-    solventlist =\
+    resultlist =\
       yasara.ShowWin("Custom","SOLVENT SELECTION",600,400,
       "List",        20,70,"Solvent",250,250,"No",                 
-                     15,    "None(gas)",
-                            "Water",
-                            "Acetonitrile",
-                            "Acetone",
-                            "Ethanol",
-                            "Methanol",
-                            "CCl4",
-                            "CH2Cl2",
-                            "Chloroform",
-                            "DMSO",
-                            "DMF",
-                            "Hexane",
-                            "Toluene",
-                            "Pyridine",
-                            "THF",
-      "Button",      542,348," O K")  
+                     15,   "None(gas)",
+                           "Water",
+                           "Acetonitrile",
+                           "Acetone",
+                           "Ethanol",
+                           "Methanol",
+                           "CCl4",
+                           "CH2Cl2",
+                           "Chloroform",
+                           "DMSO",
+                           "DMF",
+                           "Hexane",
+                           "Toluene",
+                           "Pyridine",
+                           "THF",
+      "Button",      542,348," O K")
+
 
     solv= open((macrotarget)+'/'+'solvent.txt', 'w+')
-    solv.write((str(solventlist)).replace("'","").replace(" ", "\n").replace("[","").replace("]","").replace(",",""))
+    solv.write((str(resultlist)).replace("'","").replace(" ", "\n").replace("[1","").replace("]","").replace(",",""))
     solv.write('\n')
     solv.close()    
     f = open((macrotarget)+'/'+'solvent.txt', "r")
     content= f.readlines()
-    solvent= str((content[0]).strip('\n'))
+    solvent= str((content[1]).strip('\n'))
+    print(content)
+    print(solvent)
     if solvent == "None":
       solvent= ' '
     else:
