@@ -2790,6 +2790,9 @@ if method == 'ORCA' and methodology == str(3) or methodology == str(8)  or metho
       yasara.plugin.end()
 
     elif remethodology == str(2):
+      if functional == 'RHF PM3':
+         yasara.ShowMessage("PM3 method can not compute Hirshfeld charge population. Please use another basis set.") 
+         yasara.plugin.end()
       atomcharge=int(reactcharge)
       reactmultiplicity=int(reactmultiplicity)
       newmultiplicity=reactmultiplicity+1
