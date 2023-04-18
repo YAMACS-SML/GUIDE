@@ -2728,7 +2728,10 @@ if method == 'ORCA' and methodology == str(3) or methodology == str(8)  or metho
       yasara.ShowMessage("HOMO LUMO energy difference is "+ str(hlgap)+" Eh") 
       yasara.plugin.end()
 
-    elif remethodology == str(3):
+    elif remethodology == str(3):      
+      if functional == 'RHF PM3':
+         yasara.ShowMessage("PM3 method can not compute Hirshfeld charge population. Please use another basis set.") 
+         yasara.plugin.end()     
       atomcharge=int(reactcharge)
       reactmultiplicity=int(reactmultiplicity)
       newmultiplicity=reactmultiplicity+1
