@@ -1,9 +1,9 @@
 # YASARA PLUGIN FOR DFT
 # TOPIC:       SML
 # TITLE:       SML
-# AUTHOR:      A.sarkar # VERSION 3.4
+# AUTHOR:      A.sarkar # VERSION 3.5
 # LICENSE:     Non-Commercial
-# DATE:        07.02.2023
+# DATE:        09.02.2024
 # This is a YASARA plugin to be placed in the /plg subdirectory
 # Go to www.yasara.org/plugins for documentation and downloads
 
@@ -477,18 +477,24 @@ if method == 'ORCA' and methodology == str(3) :
 ##Saving the xyz file of the reactant
   yasara.run("SaveXYZ 1,"+str(macrotarget)+'/'+"reactant.xyz,transform=Yes") 
 ##modifying the reactant.xyz file without hamparing the main file
-  with open(str(macrotarget)+'/'+'reactant.xyz', 'r') as fin:
+  reactantxyz=os.path.join(macrotarget,'reactant.xyz')
+  bfactortxt=os.path.join(macrotarget,'bfactor.txt')
+  reactanttxt=os.path.join((macrotarget),'reactant.txt')
+  reactantfiletertxt=os.path.join(macrotarget,'reactant_filter.txt')
+  os.chdir(macrotarget)
+  time.sleep(3)
+  with open(reactantxyz, 'r') as fin:
       data = fin.read().splitlines(True)
-  with open(str(macrotarget)+'/'+'reactant.txt', 'w') as fout:
+  with open(reactanttxt, 'w') as fout:
       fout.writelines(data[2:]) 
       fout.close()
    
 ##concatination of reactant xyz info with its b-factor value   
   combine =[]
 
-  with open((macrotarget)+'/'+'bfactor.txt') as xh:
-    with open((macrotarget)+'/'+'reactant.txt') as yh:
-      with open((macrotarget)+'/'+'reactant_filter.txt',"w") as zh:
+  with open(bfactortxt) as xh:
+    with open(reactanttxt) as yh:
+      with open(reactantfiletertxt,"w") as zh:
          #Read first file
          xlines = xh.readlines()
          #Read second file
@@ -918,7 +924,8 @@ if method == 'ORCA' and methodology == str(3) or methodology == str(8)  or metho
     yasara.ShowMessage("orca is optimizing the geometry of reactant")
   #os.rename(macrotarget+'/'+'reactant.xyz', macrotarget+'/'+'prev_reactant.xyz')
     if mod == str(1) or mod == str(2):
-      os.system(str(orca)+' '+macrotarget+'/'+'reactant.inp > '+macrotarget+'/'+'reactant.out') 
+      os.chdir(macrotarget)
+      os.system(str(orca)+' reactant.inp > reactant.out') 
     else:
       os.system('orca '+macrotarget+'/'+'reactant.inp > '+macrotarget+'/'+'reactant.out')  
 
@@ -1032,18 +1039,26 @@ if method == 'ORCA' and methodology == str(3) or methodology == str(8)  or metho
 ##Saving the xyz file of the product
     yasara.run("SaveXYZ all,"+str(macrotarget)+'/'+"product.xyz,transform=Yes") 
 ##modifying the reactant.xyz file without hamparing the main file
-    with open(str(macrotarget)+'/'+'product.xyz', 'r') as fin:
+    prodeltexttxt=os.path.join(macrotarget,'prodeltext.txt')
+    productbfactortxt=os.path.join(macrotarget,'product_bfactor.txt')
+    productxyz=os.path.join(macrotarget,'product.xyz')
+    producttxt=os.path.join(macrotarget,'product.txt')
+    productfiltertxt=os.path.join(macrotarget,'product_filter.txt')
+    productfinaltxt=os.path.join(macrotarget,'product_final.txt')
+    os.chdir(macrotarget)
+    time.sleep(3)
+    with open(productxyz, 'r') as fin:
         data = fin.read().splitlines(True)
-    with open(str(macrotarget)+'/'+'product.txt', 'w') as fout:
+    with open(producttxt, 'w') as fout:
         fout.writelines(data[2:]) 
         fout.close()
    
 ##concatination of reactant xyz info with its b-factor value   
     procombine =[]
 
-    with open((macrotarget)+'/'+'product.txt') as xh:
-      with open((macrotarget)+'/'+'product_bfactor.txt') as yh:
-        with open((macrotarget)+'/'+'product_filter.txt',"w") as zh:
+    with open(producttxt) as xh:
+      with open(productbfactortxt) as yh:
+        with open(productfiltertxt,"w") as zh:
        #Read first file
            xlines = xh.readlines()
          #Read second file
@@ -1054,8 +1069,8 @@ if method == 'ORCA' and methodology == str(3) or methodology == str(8)  or metho
            for i in range(len(xlines)):
               line = ylines[i].strip('\n') + '    ' + xlines[i]
               zh.write(line)
-    os.remove((macrotarget)+'/'+'product.txt')
-    os.remove((macrotarget)+'/'+'product_bfactor.txt')
+    os.remove(producttxt)
+    os.remove(productbfactortxt)
     os.remove((macrotarget)+'/'+'reactant_filter.txt')
     yasara.run("clear")
     yasara.run("DelObj all")
@@ -1098,24 +1113,24 @@ if method == 'ORCA' and methodology == str(3) or methodology == str(8)  or metho
         return [x[1] for x in lines]
 
 
-    with open((macrotarget)+'/'+'product_filter.txt') as f:
+    with open(productfiltertxt) as f:
       # sort the lines based on column 1, and column 1 is type int
         sorted_lines = sortLinesByColumn(f, 1, int)
-        k= open((macrotarget)+'/'+'product_final.txt',"w")
+        k= open(productfinaltxt,"w")
         k.writelines(sorted_lines)
         k.close()
 
-    os.remove((macrotarget)+'/'+'product_filter.txt')
-    proedit = open((macrotarget)+'/'+'product_final.txt', "r")
-    editfile = open((macrotarget)+'/'+'product_filter.txt', "w")
+    os.remove(productfiltertxt)
+    proedit = open(productfinaltxt, "r")
+    editfile = open(productfiltertxt, "w")
     for line in proedit:
         if line.strip():
             editfile.write("\t".join(line.split()[1:]) + "\n")    
     proedit.close()
     editfile.close()
-    os.remove((macrotarget)+'/'+'product_final.txt')
+    os.remove(productfinaltxt)
 #######################################################
-    orcaproinp=open((macrotarget)+'/'+'product_filter.txt')
+    orcaproinp=open(productfiltertxt)
     prodata=orcaproinp.read()
     orcaproinp.close()
     print(prodata)
@@ -1142,7 +1157,8 @@ if method == 'ORCA' and methodology == str(3) or methodology == str(8)  or metho
 
     yasara.ShowMessage("orca is optimizing the geometry of product")
     if mod == str(1) or mod == str(2):
-      os.system(str(orca)+' '+macrotarget+'/'+'product.inp > '+macrotarget+'/'+'product.out')
+      os.chdir(macrotarget)
+      os.system(str(orca)+' product.inp > product.out')
     else:
       os.system('orca '+macrotarget+'/'+'product.inp > '+macrotarget+'/'+'product.out')
   
@@ -2183,6 +2199,7 @@ if method == 'ORCA' and methodology == str(3) or methodology == str(8)  or metho
     yasara.ShowMessage("Geometry optimization is in progress..")  
     if mod == str(1) or mod == str(2): 
       print('check')
+      os.chdir(macrotarget)
       os.system(orca+' QM_reactant.inp >QM_reactant.out')
     else:
       os.system('orca QM_reactant.inp >QM_reactant.out')
@@ -2417,16 +2434,18 @@ if method == 'ORCA' and methodology == str(3) or methodology == str(8)  or metho
 ##Saving the xyz file of the product
       yasara.run("SaveXYZ all,"+str(macrotarget)+'/'+"QM_product.xyz,transform=Yes") 
 ##modifying the reactant.xyz file without hamparing the main file
-      with open(str(macrotarget)+'/'+'QM_product.xyz', 'r') as fin:
+      qmproductxyz=os.path.join(macrotarget,'QM_product.xyz')
+      qmproducttxt=os.path.join(macrotarget,'QM_product.txt')
+      with open(qmproductxyz, 'r') as fin:
           data = fin.read().splitlines(True)
-      with open(str(macrotarget)+'/'+'QM_product.txt', 'w') as fout:
+      with open(qmproducttxt, 'w') as fout:
           fout.writelines(data[2:]) 
           fout.close()
    
 ##concatination of reactant xyz info with its b-factor value   
       procombine =[]
-
-      with open((macrotarget)+'/'+'QM_product.txt') as xh:
+      
+      with open(qmproducttxt) as xh:
         with open((macrotarget)+'/'+'product_bfactor.txt') as yh:
           with open((macrotarget)+'/'+'QM_product_filter.txt',"w") as zh:
        #Read first file
@@ -2619,7 +2638,12 @@ if method == 'ORCA' and methodology == str(3) or methodology == str(8)  or metho
 
     elif remethodology == str(2):
       nameobj='QM_reactant'
-      with open(macrotarget+"/"+str(nameobj)+'.out',"r") as fin, open(macrotarget+'/'+str(nameobj)+'_orbital_energy.txt',"w") as fout:
+      qmreactantout=os.path.join(macrotarget,"QM_reactant.out")
+      qmorbital_energy=os.path.join(macrotarget,"QM_reactant_orbital_energy.txt")
+      qmorbital_energy_finetxt= os.path.join(macrotarget,"QM_reactant_orbital_energy_fine.txt")
+      qmorbital_energy_filtertxt= os.path.join(macrotarget,"QM_reactant_orbital_energy_filter.txt")
+      qmorbital_energy_finaltxt= os.path.join(macrotarget,"QM_reactant_orbital_energy_final.txt")
+      with open(qmreactantout,"r") as fin, open(qmorbital_energy,"w") as fout:
           string = 'ORBITAL ENERGIES'
           for line in fin:
               if string in line:
@@ -2630,20 +2654,20 @@ if method == 'ORCA' and methodology == str(3) or methodology == str(8)  or metho
                           fout.write((line).replace('--','').replace('*','').replace('MULLIKEN POPULATION ANALYSIS','').replace('ORBITAL ENERGIES',''))
                   except StopIteration:
                       pass  # ran out of file to read
-      redit= open(macrotarget+'/'+str(nameobj)+'_orbital_energy.txt','r')
+      redit= open(qmorbital_energy,'r')
       reditdata=redit.read()
-      rewrite=open(macrotarget+'/'+str(nameobj)+'_orbital_energy_fine.txt','w+')
+      rewrite=open(qmorbital_energy_finetxt,'w+')
       rewrite.write('check')
       rewrite.write(str(reditdata))
       rewrite.write('\n end')
       rewrite.close()
-      with open(macrotarget+'/'+str(nameobj)+'_orbital_energy_fine.txt', 'r') as ffin:
+      with open(qmorbital_energy_finetxt, 'r') as ffin:
           fdata = ffin.read().splitlines(True)
-      with open(macrotarget+'/'+str(nameobj)+'_orbital_energy_filter.txt',"w") as ffout:
+      with open(qmorbital_energy_filtertxt,"w") as ffout:
          ffout.write("checkanion\n")
          ffout.writelines(fdata[1:])
 
-      with open(macrotarget+'/'+str(nameobj)+'_orbital_energy_filter.txt',"r") as gfin, open(macrotarget+'/'+str(nameobj)+'_orbital_energy_final.txt',"w") as gfout:
+      with open(qmorbital_energy_filtertxt,"r") as gfin, open(qmorbital_energy_finaltxt,"w") as gfout:
            string = 'ORBITAL ENERGIES'
            for line in gfin:
                if string in line:
@@ -2655,13 +2679,13 @@ if method == 'ORCA' and methodology == str(3) or methodology == str(8)  or metho
                   except StopIteration:
                       pass  # ran out of file to read
 
-      final= open (macrotarget+'/'+str(nameobj)+'_orbital_energy_final.txt',"r+")
+      final= open (qmorbital_energy_finaltxt,"r+")
       finallines= final.readlines()[4:]
       final.seek(0)
       final.truncate()
       final.writelines(finallines)
       final.close()
-      f = open(macrotarget+'/'+str(nameobj)+'_orbital_energy_final.txt', "r")
+      f = open(qmorbital_energy_finaltxt, "r")
       g = open(macrotarget+'/'+str(nameobj)+'_orbital_energy_dat.txt', "w")
       for line in f:
         if line.strip():
@@ -2719,12 +2743,12 @@ if method == 'ORCA' and methodology == str(3) or methodology == str(8)  or metho
       hlgap=lumoenergy-homoenegy  
       hlgap=round(hlgap,2)
       hlgap=str(hlgap)
-      os.remove(macrotarget+'/'+str(nameobj)+'_HOMO_lumo_dat.txt')
+      #os.remove(macrotarget+'/'+str(nameobj)+'_HOMO_lumo_dat.txt')
         #os.remove(macrotarget+'/'+'orbital_energy_dat.txt')
-      os.remove(macrotarget+'/'+str(nameobj)+'_HOMO_dat.txt')
-      os.remove(macrotarget+'/'+str(nameobj)+'_HOMO_ev.txt')
-      os.remove(macrotarget+'/'+str(nameobj)+'_orbital_energy.txt')
-      os.remove(macrotarget+'/'+str(nameobj)+'_orbital_energy_fine.txt')
+      #os.remove(macrotarget+'/'+str(nameobj)+'_HOMO_dat.txt')
+      #os.remove(macrotarget+'/'+str(nameobj)+'_HOMO_ev.txt')
+      #os.remove(macrotarget+'/'+str(nameobj)+'_orbital_energy.txt')
+      #os.remove(macrotarget+'/'+str(nameobj)+'_orbital_energy_fine.txt')
       yasara.ShowMessage("HOMO LUMO energy difference is "+ str(hlgap)+" Eh") 
       yasara.plugin.end()
 
@@ -2797,11 +2821,26 @@ if method == 'ORCA' and methodology == str(3) or methodology == str(8)  or metho
       yasara.ShowMessage("orca is optimizing anion")
       nameobj= 'QM_reactant'
       if mod == str(1) or mod == str(2):
-        os.system(orca+' '+macrotarget+'/'+str(nameobj)+'_anion.inp >  '+macrotarget+'/'+str(nameobj)+'_anion.out')
+        os.chdir(macrotarget)
+        os.system(orca+' QM_reactant_anion.inp >QM_reactant_anion.out')
       else:
         os.system('orca '+macrotarget+'/'+str(nameobj)+'_anion.inp >  '+macrotarget+'/'+str(nameobj)+'_anion.out')
 
-      with open(macrotarget+"/"+"QM_reactant.out","r") as infin, open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_initial.txt',"w") as infout:
+      ###file defining
+      qmreactantout=os.path.join(macrotarget,"QM_reactant.out")
+      qmreactantanionout=os.path.join(macrotarget,"QM_reactant_anion.out")
+      qmreactantcationout=os.path.join(macrotarget,"QM_reactant_cation.out")
+      
+      qmhirshfeld_charge_initialtxt=os.path.join(macrotarget,((nameobj)+'_hirshfeld_charge_initial.txt'))
+      qmhirshfeld_charge_inital_filtertxt= os.path.join(macrotarget,((nameobj)+'hirshfeld_charge_inital_filter.txt'))
+      qmhirshfeld_charge_inital_finaltxt= os.path.join(macrotarget,((nameobj)+'hirshfeld_charge_inital_final.txt'))
+      qmhirshfeld_charge_aniontxt=os.path.join(macrotarget,((nameobj)+'hirshfeld_charge_anion.txt'))
+      qmhirshfeld_charge_anion_filtertxt= os.path.join(macrotarget,((nameobj)+'hirshfeld_charge_anion_filter.txt'))
+      qmhirshfeld_charge_anion_finaltxt= os.path.join(macrotarget,((nameobj)+'hirshfeld_charge_anion_final.txt'))
+      qmhirshfeld_charge_cationtxt=os.path.join(macrotarget,((nameobj)+'hirshfeld_charge_cation.txt'))
+      qmhirshfeld_charge_cation_filtertxt= os.path.join(macrotarget,((nameobj)+'hirshfeld_charge_cation_filter.txt'))
+      qmhirshfeld_charge_cation_finaltxt= os.path.join(macrotarget,((nameobj)+'hirshfeld_charge_cation_final.txt'))      
+      with open(qmreactantout,"r") as infin, open(qmhirshfeld_charge_initialtxt,"w") as infout:
            string = 'HIRSHFELD ANALYSIS'
            for line in infin:
                if string in line:
@@ -2813,7 +2852,7 @@ if method == 'ORCA' and methodology == str(3) or methodology == str(8)  or metho
                   except StopIteration:
                       pass  # ran out of file to read
         
-      with open(macrotarget+'/'+str(nameobj)+'_anion.out',"r") as fin, open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_anion.txt',"w") as fout:
+      with open(qmreactantanionout,"r") as fin, open(qmhirshfeld_charge_aniontxt,"w") as fout:
            string = 'HIRSHFELD ANALYSIS'
            for line in fin:
                if string in line:
@@ -2826,7 +2865,7 @@ if method == 'ORCA' and methodology == str(3) or methodology == str(8)  or metho
                       pass  # ran out of file to read
 
 
-      with open(macrotarget+'/'+str(nameobj)+'_cation.out',"r") as fin, open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_cation.txt',"w") as fout:
+      with open(qmreactantcationout,"r") as fin, open(qmhirshfeld_charge_cationtxt,"w") as fout:
            string = 'HIRSHFELD ANALYSIS'
            for line in fin:
                if string in line:
@@ -2838,46 +2877,45 @@ if method == 'ORCA' and methodology == str(3) or methodology == str(8)  or metho
                   except StopIteration:
                       pass  # ran out of file to read
 
-      countfini= open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_initial.txt', 'r')
+      countfini= open(qmhirshfeld_charge_initialtxt, 'r')
       countdataini = countfini.read()
       inianoccurrences = countdataini.count("HIRSHFELD ANALYSIS")
       print(inianoccurrences)
-      if inianoccurrences == str(2):
-        
-        with open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_initial.txt', 'r') as fini:
+      if inianoccurrences ==(2):
+        with open(qmhirshfeld_charge_initialtxt, 'r') as fini:
             inidata = fini.read().splitlines(True)
-        with open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_inital_filter.txt',"w") as foutini:
+        with open(qmhirshfeld_charge_inital_filtertxt,"w") as foutini:
            foutini.write("checkanion\n")
            foutini.writelines(inidata[1:])
 
-        with open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_initial_filter.txt',"r") as inifin, open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_initial_final.txt',"w") as inifout:
+        with open(qmhirshfeld_charge_inital_filtertxt,"r") as inifin, open(qmhirshfeld_charge_inital_finaltxt,"w") as inifout:
              string = 'HIRSHFELD ANALYSIS'
-             for line in fin:
+             for line in inifin:
                  if string in line:
-                    fout.write(line)
+                    inifout.write(line)
                     try: 
                        while 'TIMINGS' not in line:
-                           line = next(fin)
-                           fout.write(line)
+                           line = next(inifin)
+                           inifout.write(line)
                     except StopIteration:
                         pass  # ran out of file to read
-        os.remove(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_initial_filter.txt')
+        os.remove(qmhirshfeld_charge_inital_filtertxt)
       else:
         os.rename(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_initial.txt', macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_initial_final.txt')
 
-      countfanion= open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_anion.txt', 'r')
+      countfanion= open(qmhirshfeld_charge_aniontxt, 'r')
       countdataanion = countfanion.read()
       anoccurrences = countdataanion.count("HIRSHFELD ANALYSIS")
       print(anoccurrences)
-      if anoccurrences == str(2):
-        
-        with open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_anion.txt', 'r') as fin:
+      if anoccurrences == (2):
+        print('hello')
+        with open(qmhirshfeld_charge_aniontxt, 'r') as fin:
             data = fin.read().splitlines(True)
-        with open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_anion_filter.txt',"w") as fout:
+        with open(qmhirshfeld_charge_anion_filtertxt,"w") as fout:
            fout.write("checkanion\n")
            fout.writelines(data[1:])
 
-        with open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_anion_filter.txt',"r") as fin, open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_anion_final.txt',"w") as fout:
+        with open(qmhirshfeld_charge_anion_filtertxt,"r") as fin, open(qmhirshfeld_charge_anion_finaltxt,"w") as fout:
              string = 'HIRSHFELD ANALYSIS'
              for line in fin:
                  if string in line:
@@ -2888,22 +2926,24 @@ if method == 'ORCA' and methodology == str(3) or methodology == str(8)  or metho
                            fout.write(line)
                     except StopIteration:
                         pass  # ran out of file to read
-        os.remove(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_anion_filter.txt')
+        os.remove(qmhirshfeld_charge_anion_filtertxt)
       else:
-        os.rename(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_anion.txt', macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_anion_final.txt')
+        print('failed')
+        yasara.plugin.end()
 
       countfcat= open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_cation.txt', 'r')
       countdatacat = countfcat.read()
       catoccurrences = countdatacat.count("HIRSHFELD ANALYSIS")
       print(catoccurrences)
-      if catoccurrences == str(2):
-        with open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_cation.txt', 'r') as fin:
+      if catoccurrences == (2):
+        print('hello')
+        with open(qmhirshfeld_charge_cationtxt, 'r') as fin:
             data = fin.read().splitlines(True)
-        with open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_cation_filter.txt',"w") as fout:
+        with open(qmhirshfeld_charge_cation_filtertxt,"w") as fout:
            fout.write("checkcation\n")
            fout.writelines(data[1:])
 
-        with open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_cation_filter.txt',"r") as fin, open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_cation_final.txt',"w") as fout:
+        with open(qmhirshfeld_charge_cation_filtertxt,"r") as fin, open(qmhirshfeld_charge_cation_finaltxt,"w") as fout:
              string = 'HIRSHFELD ANALYSIS'
              for line in fin:
                  if string in line:
@@ -2914,19 +2954,21 @@ if method == 'ORCA' and methodology == str(3) or methodology == str(8)  or metho
                            fout.write(line)
                     except StopIteration:
                         pass  # ran out of file to read
-        os.remove(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_cation_filter.txt')
+        os.remove(qmhirshfeld_charge_cation_filtertxt)
       else:
-        os.rename(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_cation.txt', macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_cation_final.txt')
+        print('failed')
+        yasara.plugin.end()
+        #os.rename(qmhirshfeld_charge_cationtxt, qmhirshfeld_charge_cation_finaltxt)
 
-      with open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_cation_final.txt', 'r') as fin:
+      with open(qmhirshfeld_charge_cation_finaltxt, 'r') as fin:
           data = fin.read().splitlines(True)
       with open(macrotarget+'/'+str(nameobj)+'_cation_charge.txt',"w") as fout:
          fout.writelines(data[7:-5])
-      with open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_anion_final.txt', 'r') as fin:
+      with open(qmhirshfeld_charge_anion_finaltxt, 'r') as fin:
           data = fin.read().splitlines(True)
       with open(macrotarget+'/'+str(nameobj)+'_anion_charge.txt',"w") as fout:
          fout.writelines(data[7:-5])
-      with open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_initial_final.txt', 'r') as initialfin:
+      with open(qmhirshfeld_charge_inital_finaltxt, 'r') as initialfin:
           alldata = initialfin.read().splitlines(True)
       with open(macrotarget+'/'+str(nameobj)+'_initial_charge.txt',"w") as initialfout:
          initialfout.writelines(alldata[7:-5])
@@ -3258,7 +3300,8 @@ elif method == 'ORCA' and methodology == str(1) or methodology == str(2) or meth
     orca_sp.close()
     yasara.ShowMessage("orca is optimizing single point energies")
     if mod == str(1) or mod == str(2):
-      os.system(orca+' '+macrotarget+'/'+str(nameobj)+'.inp >  '+macrotarget+'/'+str(nameobj)+'.out')
+      os.chdir(macrotarget)
+      os.system(orca+' '+str(nameobj)+'.inp >  '+str(nameobj)+'.out')
     else:
       
       os.system('orca '+macrotarget+'/'+str(nameobj)+'.inp >  '+macrotarget+'/'+str(nameobj)+'.out')
@@ -3303,7 +3346,8 @@ elif method == 'ORCA' and methodology == str(1) or methodology == str(2) or meth
               ####temposection
     else:
         print('check')
-        with open(macrotarget+"/"+str(nameobj)+'.out',"r") as fin, open(macrotarget+'/'+str(nameobj)+'_orbital_energy.txt',"w") as fout:
+        orbitalenergytxt= os.path.join(macrotarget,((nameobj)+'_orbital_energy.txt'))
+        with open(macrotarget+"/"+str(nameobj)+'.out',"r") as fin, open(orbitalenergytxt,"w") as fout:
             string = 'ORBITAL ENERGIES'
             for line in fin:
                 if string in line:
@@ -3314,13 +3358,13 @@ elif method == 'ORCA' and methodology == str(1) or methodology == str(2) or meth
                             fout.write((line).replace('--','').replace('*','').replace('MULLIKEN POPULATION ANALYSIS','').replace('ORBITAL ENERGIES',''))
                     except StopIteration:
                         pass  # ran out of file to read
-        final= open (macrotarget+'/'+str(nameobj)+'_orbital_energy.txt',"r+")
+        final= open (orbitalenergytxt,"r+")
         finallines= final.readlines()[4:]
         final.seek(0)
         final.truncate()
         final.writelines(finallines)
         final.close()
-        f = open(macrotarget+'/'+str(nameobj)+'_orbital_energy.txt', "r")
+        f = open(orbitalenergytxt, "r")
         g = open(macrotarget+'/'+str(nameobj)+'_orbital_energy_dat.txt', "w")
         for line in f:
           if line.strip():
@@ -3379,7 +3423,7 @@ elif method == 'ORCA' and methodology == str(1) or methodology == str(2) or meth
         hlgap=round(hlgap,2)
         hlgap=str(hlgap)
         os.remove(macrotarget+'/'+str(nameobj)+'_HOMO_lumo_dat.txt')
-        os.remove(macrotarget+'/'+'orbital_energy_dat.txt')
+        #os.remove(macrotarget+'/'+'orbital_energy_dat.txt')
         os.remove(macrotarget+'/'+str(nameobj)+'_HOMO_dat.txt')
         os.remove(macrotarget+'/'+str(nameobj)+'_HOMO_ev.txt')
         os.remove(macrotarget+'/'+str(nameobj)+'_orbital_energy.txt')
@@ -3410,7 +3454,8 @@ elif method == 'ORCA' and methodology == str(1) or methodology == str(2) or meth
     yasara.ShowMessage("orca is optimizing the geometry")
     
     if mod == str(1) or mod == str(2):
-      os.system(orca+' '+macrotarget+'/'+str(nameobj)+'.inp >  '+macrotarget+'/'+str(nameobj)+'.out')
+      os.chdir(macrotarget)
+      os.system(orca+' '+str(nameobj)+'.inp >  '+str(nameobj)+'.out')
     else:
       os.system('orca '+macrotarget+'/'+str(nameobj)+'.inp >  '+macrotarget+'/'+str(nameobj)+'.out')
     
@@ -3451,7 +3496,8 @@ elif method == 'ORCA' and methodology == str(1) or methodology == str(2) or meth
       yasara.ShowMessage("orca is optimizing cation")
     
       if mod == str(1) or mod == str(2):
-        os.system(orca+' '+macrotarget+'/'+str(nameobj)+'_cation.inp >  '+macrotarget+'/'+str(nameobj)+'_cation.out')
+        os.chdir(macrotarget)
+        os.system(orca+' '+str(nameobj)+'_cation.inp >  '+str(nameobj)+'_cation.out')
       else:
         os.system('orca '+macrotarget+'/'+str(nameobj)+'_cation.inp >  '+macrotarget+'/'+str(nameobj)+'_cation.out')
 
@@ -3473,11 +3519,26 @@ elif method == 'ORCA' and methodology == str(1) or methodology == str(2) or meth
       yasara.ShowMessage("orca is optimizing anion")
     
       if mod == str(1) or mod == str(2):
-        os.system(orca+' '+macrotarget+'/'+str(nameobj)+'_anion.inp >  '+macrotarget+'/'+str(nameobj)+'_anion.out')
+        os.chdir(macrotarget)
+        os.system(orca+' '+str(nameobj)+'_anion.inp >  '+str(nameobj)+'_anion.out')
       else:
         os.system('orca '+macrotarget+'/'+str(nameobj)+'_anion.inp >  '+macrotarget+'/'+str(nameobj)+'_anion.out')
-
-      with open(macrotarget+"/"+str(nameobj)+".out","r") as infin, open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_initial.txt',"w") as infout:
+      
+      hirshfeld_charge_initialtxt=os.path.join(macrotarget,((nameobj)+'_hirshfeld_charge_initial.txt'))
+      nameobjout=os.path.join(macrotarget,((nameobj)+".out"))
+      nameobjanionout=os.path.join(macrotarget,((nameobj)+"_anion.out"))
+      nameobjcationout=os.path.join(macrotarget,((nameobj)+"_cation.out"))
+      hirshfeld_charge_aniontxt=os.path.join(macrotarget,((nameobj)+'_hirshfeld_charge_anion.txt'))
+      hirshfeld_charge_anion_filtertxt= os.path.join(macrotarget,((nameobj)+'_hirshfeld_charge_anion_filter.txt'))
+      hirshfeld_charge_anion_finaltxt= os.path.join(macrotarget,((nameobj)+'_hirshfeld_charge_anion_final.txt'))      
+      hirshfeld_charge_cationtxt=os.path.join(macrotarget,((nameobj)+'_hirshfeld_charge_cation.txt'))
+      hirshfeld_charge_cation_filtertxt= os.path.join(macrotarget,((nameobj)+'_hirshfeld_charge_cation_filter.txt'))
+      hirshfeld_charge_cation_finaltxt= os.path.join(macrotarget,((nameobj)+'_hirshfeld_charge_cation_final.txt'))
+      hirshfeld_charge_inital_filtertxt= os.path.join(macrotarget,((nameobj)+'_hirshfeld_charge_inital_filter.txt'))
+      hirshfeld_charge_initial_finaltxt=os.path.join(macrotarget,((nameobj)+'_hirshfeld_charge_initial_final.txt'))
+      
+      
+      with open(nameobjout,"r") as infin, open(hirshfeld_charge_initialtxt,"w") as infout:
            string = 'HIRSHFELD ANALYSIS'
            for line in infin:
                if string in line:
@@ -3488,7 +3549,7 @@ elif method == 'ORCA' and methodology == str(1) or methodology == str(2) or meth
                          infout.write(line)
                   except StopIteration:
                       pass  # ran out of file to read        
-      with open(macrotarget+'/'+str(nameobj)+'_anion.out',"r") as fin, open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_anion.txt',"w") as fout:
+      with open(nameobjanionout,"r") as fin, open(hirshfeld_charge_aniontxt,"w") as fout:
            string = 'HIRSHFELD ANALYSIS'
            for line in fin:
                if string in line:
@@ -3501,7 +3562,7 @@ elif method == 'ORCA' and methodology == str(1) or methodology == str(2) or meth
                       pass  # ran out of file to read
 
 
-      with open(macrotarget+'/'+str(nameobj)+'_cation.out',"r") as fin, open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_cation.txt',"w") as fout:
+      with open(nameobjcationout,"r") as fin, open(hirshfeld_charge_cationtxt,"w") as fout:
            string = 'HIRSHFELD ANALYSIS'
            for line in fin:
                if string in line:
@@ -3515,13 +3576,13 @@ elif method == 'ORCA' and methodology == str(1) or methodology == str(2) or meth
 
 
 
-      with open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_anion.txt', 'r') as fin:
+      with open(hirshfeld_charge_aniontxt, 'r') as fin:
           data = fin.read().splitlines(True)
-      with open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_anion_filter.txt',"w") as fout:
+      with open(hirshfeld_charge_anion_filtertxt,"w") as fout:
          fout.write("checkanion\n")
          fout.writelines(data[1:])
 
-      with open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_anion_filter.txt',"r") as fin, open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_anion_final.txt',"w") as fout:
+      with open(hirshfeld_charge_anion_filtertxt,"r") as fin, open(hirshfeld_charge_anion_finaltxt,"w") as fout:
            string = 'HIRSHFELD ANALYSIS'
            for line in fin:
                if string in line:
@@ -3537,35 +3598,36 @@ elif method == 'ORCA' and methodology == str(1) or methodology == str(2) or meth
       countdataini = countfini.read()
       inianoccurrences = countdataini.count("HIRSHFELD ANALYSIS")
       print(inianoccurrences)
-      if inianoccurrences == str(2):        
-        with open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_initial.txt', 'r') as fini:
+      if inianoccurrences == (2):        
+        
+        with open(hirshfeld_charge_initialtxt, 'r') as fini:
             inidata = fini.read().splitlines(True)
-        with open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_inital_filter.txt',"w") as foutini:
+        with open(hirshfeld_charge_inital_filtertxt,"w") as foutini:
            foutini.write("checkanion\n")
            foutini.writelines(inidata[1:])
 
-        with open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_initial_filter.txt',"r") as inifin, open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_initial_final.txt',"w") as inifout:
+        with open(hirshfeld_charge_inital_filtertxt,"r") as inifin, open(hirshfeld_charge_initial_finaltxt,"w") as inifout:
              string = 'HIRSHFELD ANALYSIS'
-             for line in fin:
+             for line in inifin:
                  if string in line:
-                    fout.write(line)
+                    inifout.write(line)
                     try: 
                        while 'TIMINGS' not in line:
-                           line = next(fin)
-                           fout.write(line)
+                           line = next(inifin)
+                           inifout.write(line)
                     except StopIteration:
                         pass  # ran out of file to read
-        os.remove(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_initial_filter.txt')
+        os.remove(hirshfeld_charge_inital_filtertxt)
       else:
-        os.rename(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_initial.txt', macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_initial_final.txt')
+        os.rename(hirshfeld_charge_initialtxt, hirshfeld_charge_initial_finaltxt)
 
-      with open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_cation.txt', 'r') as fin:
+      with open(hirshfeld_charge_cationtxt, 'r') as fin:
           data = fin.read().splitlines(True)
-      with open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_cation_filter.txt',"w") as fout:
+      with open(hirshfeld_charge_cation_filtertxt,"w") as fout:
          fout.write("checkcation\n")
          fout.writelines(data[1:])
 
-      with open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_cation_filter.txt',"r") as fin, open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_cation_final.txt',"w") as fout:
+      with open(hirshfeld_charge_cation_filtertxt,"r") as fin, open(hirshfeld_charge_cation_finaltxt,"w") as fout:
            string = 'HIRSHFELD ANALYSIS'
            for line in fin:
                if string in line:
@@ -3576,16 +3638,16 @@ elif method == 'ORCA' and methodology == str(1) or methodology == str(2) or meth
                          fout.write(line)
                   except StopIteration:
                       pass  # ran out of file to read
-      os.remove(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_cation_filter.txt')
-      with open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_cation_final.txt', 'r') as fin:
+      os.remove(hirshfeld_charge_cation_filtertxt)
+      with open(hirshfeld_charge_cation_finaltxt, 'r') as fin:
           data = fin.read().splitlines(True)
       with open(macrotarget+'/'+str(nameobj)+'_cation_charge.txt',"w") as fout:
          fout.writelines(data[7:-5])
-      with open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_anion_final.txt', 'r') as fin:
+      with open(hirshfeld_charge_anion_finaltxt, 'r') as fin:
           data = fin.read().splitlines(True)
       with open(macrotarget+'/'+str(nameobj)+'_anion_charge.txt',"w") as fout:
          fout.writelines(data[7:-5])
-      with open(macrotarget+'/'+str(nameobj)+'_hirshfeld_charge_initial_final.txt', 'r') as initialfin:
+      with open(hirshfeld_charge_initial_finaltxt, 'r') as initialfin:
           alldata = initialfin.read().splitlines(True)
       with open(macrotarget+'/'+str(nameobj)+'_initial_charge.txt',"w") as initialfout:
          initialfout.writelines(alldata[7:-5])
@@ -3726,7 +3788,8 @@ elif method == 'ORCA' and methodology == str(1) or methodology == str(2) or meth
     yasara.ShowMessage("orca is optimizing the molecule")
     
     if mod == str(1) or mod == str(2):     
-     os.system(orca+' '+macrotarget+'/'+str(nameobj)+'.inp >  '+macrotarget+'/'+str(nameobj)+'.out')
+     os.chdir(macrotarget)
+     os.system(orca+' '+(nameobj)+'.inp >  '+(nameobj)+'.out')
       
     else:
       os.system('orca '+macrotarget+'/'+str(nameobj)+'.inp >  '+macrotarget+'/'+str(nameobj)+'.out')
@@ -3759,7 +3822,8 @@ elif method == 'ORCA' and methodology == str(1) or methodology == str(2) or meth
     orca_geo.close()
     yasara.ShowMessage("orca is optimizing the Vibrational frequencies")
     if mod == str(1) or mod == str(2):
-      os.system(orca+' '+macrotarget+'/'+str(nameobj)+'.inp >  '+macrotarget+'/'+str(nameobj)+'.out')
+      os.chdir(macrotarget)
+      os.system(orca+' '+str(nameobj)+'.inp >  '+str(nameobj)+'.out')
       
     else: 
       os.system('orca '+macrotarget+'/'+str(nameobj)+'.inp >  '+macrotarget+'/'+str(nameobj)+'.out')
@@ -3893,13 +3957,14 @@ elif method == 'ORCA' and methodology == str(1) or methodology == str(2) or meth
     #os.remove((macrotarget)+'/'+'solvent.txt')
     yasara.ShowMessage("orca is calculating the UV-Vis spectroscopy")
     if mod == str(1) or mod == str(2):
-      os.system(orca+' '+macrotarget+'/'+str(nameobj)+'.inp >  '+macrotarget+'/'+str(nameobj)+'.out')  
+      os.chdir(macrotarget)
+      os.system(orca+' '+str(nameobj)+'.inp >  '+str(nameobj)+'.out')  
       yasara.ShowMessage("done") 
       os.chdir(macrotarget)
       if mod == str(1):
         os.system('./orca_mapspc '+macrotarget+'/'+str(nameobj)+'.out ABS -W1000' )
       else:
-        os.system('orca_mapspc.exe '+macrotarget+'/'+str(nameobj)+'.out ABS -W1000' )      
+        os.system('orca_mapspc.exe '+str(nameobj)+'.out ABS -W1000' )      
     else:
       os.system('orca '+macrotarget+'/'+str(nameobj)+'.inp >  '+macrotarget+'/'+str(nameobj)+'.out')  
       yasara.ShowMessage("done") 
@@ -3909,12 +3974,13 @@ elif method == 'ORCA' and methodology == str(1) or methodology == str(2) or meth
     
     file_path = macrotarget+'/'+str(nameobj)+'.out.abs.dat'
     dataframe1 = pd.read_csv(file_path, delim_whitespace=True)
-
-    dataframe1.to_csv((macrotarget)+'/'+str(nameobj)+'.csv', index = None)
-    df = pd.read_csv((macrotarget)+'/'+str(nameobj)+'.csv', header=None)
+    objcsv=os.path.join((macrotarget),((nameobj)+'.csv'))
+    uvdatacsv=os.path.join((macrotarget),'uvdata.csv')
+    dataframe1.to_csv(objcsv, index = None)
+    df = pd.read_csv(objcsv, header=None)
     df.rename(columns={0: 'name', 1: 'id'}, inplace=True)
-    df.to_csv((macrotarget)+'/'+'uvdata.csv', index=False)
-    hr= pd.read_csv((macrotarget)+'/'+'uvdata.csv')
+    df.to_csv(uvdatacsv, index=False)
+    hr= pd.read_csv(uvdatacsv)
     hr=pd.DataFrame(hr)
     hr['wavelength'] = ((1/hr['name']*10000000).round(0))
     dr=pd.DataFrame(hr)
