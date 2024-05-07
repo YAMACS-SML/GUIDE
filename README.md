@@ -3,6 +3,8 @@ Yasara Plugin for QM calculations
 
 GUIDE is a plugin that enables users to perform ORCA and MOPAC Quantum Mechanical (QM) calculations through YASARA, providing a graphical user interface (GUI) for running calculations typically performed via a command-line interface. The plugin was developed using Python programming language. To install the plugin user needs to install YASARA (Structure), ORCA (version 5.0 or letter), MOPAC (MOPAC2016) and Python (3.8 or higher) in the system. The exact installation process is mentioned below in chronological order.
 
+
+
 1.	Download and install ORCA and MOPAC for your system. 
 	ORCA:	https://orcaforum.kofo.mpg.de/app.php/portal 
 	MOPAC:	http://openmopac.net/Download_MOPAC_Executable_Step2.html
@@ -25,3 +27,11 @@ GUIDE is a plugin that enables users to perform ORCA and MOPAC Quantum Mechanica
 	For further details, refer to section 2.1 of the manual.
 
 If you encounter an issue, please check the FAQs in the Wiki section. There may already be a solution to your problem!
+
+Notes**
+To address the module importing error in YASARA version 23.5.9 or letter, follow these steps:
+
+1.First go to the yasara/epy folder and rename the existing 'win' folder by 'oldwin'. Make a newfolder by the name 'win'
+1.Go to windows python path (e.g., C:\python310) by using CMD (Windows) or searche for python310.exe/python.exe file on go to the path.
+2.Install all the essential python modules in Windows default python version.
+3.Copy all the files of that folder and paste it in the new 'win' folder at yasara/epy directory.
