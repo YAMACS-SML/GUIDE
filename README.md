@@ -32,6 +32,6 @@ Notes**
 To address the module importing error in YASARA version 23.5.9 or letter, follow these steps:
 
 1.First go to the yasara/epy folder and rename the existing 'win' folder by 'oldwin'. Make a newfolder by the name 'win'
-1.Go to windows python path (e.g., C:\python310) by using CMD (Windows) or searche for python310.exe/python.exe file on go to the path.
-2.Install all the essential python modules in Windows default python version.
-3.Copy all the files of that folder and paste it in the new 'win' folder at yasara/epy directory.
+2.Go to windows python path (e.g., C:\python310) by using CMD (Windows) or searche for python310.exe/python.exe file on go to the path.
+3.Install all the essential python modules in Windows default python version.
+4.Copy all the files of that folder and paste it in the new 'win' folder at yasara/epy directory.
