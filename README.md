@@ -16,7 +16,8 @@ GUIDE is a plugin that enables users to perform ORCA and MOPAC Quantum Mechanica
 	a.	If you have YASARA View installed, download the file GUIDE_YASARA_view.py 
 	b.	If you have Yasara Structure installed, download the file GUIDE_YASARA_structure.py
 		(Unlike the YASARA view (free version), the YASARA Structure suite has some extra features like Energy minimization, Charge calculation, Fixing of atoms etc., allowing several advanced-level QM calculations using GUIDE)
-        c.      If you have Yasara Structure installed and want to use the latest version of , download the file GUIDE_YASARA_structur_2.py.
+        c.      If you have Yasara Structure installed and want to use the latest version of mopac, download the file GUIDE_YASARA_structur_2.py. This version also allows user to perform QM calculation for exotic metal elements.
+  	        (Ex: Ru Ge As Nb Mo Tc Rh Sb W Fr Es Cf Bk Cm Am Np Pa Ac Rn At Po Bi Ho Sb3 Ru1 Ge1 Tc Sb Te Pm Ta Re Os Ir Bs Fm).
 
 
 6.	Place the .py file in the plg folder inside YASARA installation path (...Yasara/plg). 
