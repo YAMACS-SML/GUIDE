@@ -4,7 +4,7 @@
 # AUTHOR:      A.sarkar # VERSION 4.1 extended
 # LICENSE:     Non-Commercial
 # DATE:        26.06.2023
-# REVISION:    ORCA NMR/J-coupling, robust MOPAC UV-Vis selection, Mulliken Fukui and HTML reporting, 07.10.2026
+# REVISION:    ORCA NMR/J-coupling, robust MOPAC UV-Vis selection, Mulliken Fukui and HTML reporting, 22.07.2026
 # This is a YASARA plugin to be placed in the /plg subdirectory
 # Interactive HTML uses the 3Dmol.js CDN for optimized structures and ORCA orbitals.
 # Go to www.yasara.org/plugins for documentation and downloads
@@ -2425,7 +2425,7 @@ if method == 'ORCA' and methodology == str(7):
     keyword= fkey.readlines()
     fkey.close()
     functional= str((keyword[0]).strip('\n'))
-    basis=' '.join(keyword[1:]))#str((keyword[1]).strip('\n'))
+    basis = ' '.join(line.strip() for line in keyword[1:])#str((keyword[1]).strip('\n'))
     print(functional)
     print(basis)     
 
@@ -2682,7 +2682,7 @@ if method == 'ORCA' and (methodology in {str(1), str(2), str(3), str(4), str(5),
     keyword= fkey.readlines()
     fkey.close()
     functional= str((keyword[0]).strip('\n'))
-    basis=  ' '.join(keyword[1:])#str((keyword[1]).strip('\n'))
+    basis = ' '.join(line.strip() for line in keyword[1:])#str((keyword[1]).strip('\n'))
     print(functional)
     print(basis)   
   
